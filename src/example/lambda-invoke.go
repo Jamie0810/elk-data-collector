@@ -17,7 +17,9 @@ type Input struct {
 }
 
 type Event struct {
-	TraceId string `json:"traceId"`
+	TraceId       string `json:"traceId"`
+	LogGroupName  string `json:"logGroupName"`
+	LogStreamName string `json:"logStreamName"`
 }
 
 type Response struct {
@@ -26,11 +28,15 @@ type Response struct {
 }
 
 func main() {
-	handlerEvent := Event{TraceId: "12345"}
+	event := Event{
+		TraceId:       "12345",
+		LogGroupName:  "/aws/lambda/ecdr-dev-commonwell-token-generator-lambda",
+		LogStreamName: "2021/06/26/[$LATEST]c0849761e67e43b195e4f66eda8d9e2f",
+	}
 
 	resp, err := golambdainvoke.Run(Input{
 		Port:    8001,
-		Payload: handlerEvent,
+		Payload: event,
 	})
 
 	if err != nil {
