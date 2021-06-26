@@ -1,11 +1,11 @@
 package main
 
 import (
-	service "data-collector/service"
+	"data-collector/handler"
 
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
 func main() {
-	lambda.Start(service.LambdaHandler)
+	lambda.Start(handler.LambdaHandler)
 }

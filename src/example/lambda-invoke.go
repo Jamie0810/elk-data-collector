@@ -35,7 +35,7 @@ func main() {
 	}
 
 	resp, err := golambdainvoke.Run(Input{
-		Port:    8001,
+		Port:    8080,
 		Payload: event,
 	})
 
