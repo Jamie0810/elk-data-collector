@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/aws/aws-lambda-go/lambda"
 )
@@ -16,6 +17,7 @@ type Response struct {
 }
 
 func LambdaHandler(ctx context.Context, event Event) (Response, error) {
+	fmt.Println("-----Lambda execution started-----")
 	return Response{
 		TraceId: event.TraceId,
 		Message: "Job completed",

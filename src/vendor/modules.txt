@@ -6,3 +6,6 @@ github.com/aws/aws-lambda-go/lambda/messages
 github.com/aws/aws-lambda-go/lambdacontext
 # github.com/davecgh/go-spew v1.1.1
 ## explicit
+# github.com/djhworld/go-lambda-invoke v0.0.3
+## explicit
+github.com/djhworld/go-lambda-invoke/golambdainvoke

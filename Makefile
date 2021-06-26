@@ -8,3 +8,6 @@ docker-build:
 local-run:
 	cd src && go build && \
 	_LAMBDA_SERVER_PORT=8001 go run data-collector
+
+invoke:
+	cd src/example && go run lambda-invoke.go
