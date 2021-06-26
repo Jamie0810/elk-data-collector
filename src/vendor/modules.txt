@@ -6,6 +6,12 @@ github.com/aws/aws-lambda-go/lambda/messages
 github.com/aws/aws-lambda-go/lambdacontext
 # github.com/davecgh/go-spew v1.1.1
 ## explicit
+github.com/davecgh/go-spew/spew
 # github.com/djhworld/go-lambda-invoke v0.0.3
 ## explicit
 github.com/djhworld/go-lambda-invoke/golambdainvoke
+# github.com/pmezard/go-difflib v1.0.0
+github.com/pmezard/go-difflib/difflib
+# github.com/stretchr/testify v1.3.0
+## explicit
+github.com/stretchr/testify/assert
