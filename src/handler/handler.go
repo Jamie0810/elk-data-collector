@@ -1,56 +1,63 @@
 package handler
 
 import (
+	"bytes"
+	"compress/gzip"
 	"context"
+	"encoding/base64"
+	"encoding/json"
 	"fmt"
 
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cloudwatchlogs"
 )
 
+type AwsLogs struct {
+	Data string `json:"data"`
+}
 type Event struct {
-	TraceId       string `json:"traceId"`
-	LogGroupName  string `json:"logGroupName"`
-	LogStreamName string `json:"logStreamName"`
+	AwsLogs AwsLogs `json:"awslogs"`
+}
+type Response struct {
+	Message string `json:"message"`
+	Error   string `json:"error"`
 }
 
-type Response struct {
-	TraceId string `json:"traceId"`
-	Message string `json:"message"`
+type LogEvent struct {
+	ID        string `json:"id"`
+	Timestamp int    `json:"timestamp"`
+	Message   string `json:"message"`
+}
+type Message struct {
+	MessageType         string     `json:"messageType"`
+	Owner               string     `json:"owner"`
+	LogGroup            string     `json:"logGroup"`
+	LogStream           string     `json:"logStream"`
+	SubscriptionFilters []string   `json:"subscriptionFilters"`
+	LogEvents           []LogEvent `json:"logEvents"`
 }
 
 func LambdaHandler(ctx context.Context, event Event) (Response, error) {
 	fmt.Println("-----Lambda execution started-----")
 
-	var limit int64 = 100
-
-	logGroupName := event.LogGroupName
-	logStreamName := event.LogStreamName
-
-	if logGroupName == "" || logStreamName == "" {
-		fmt.Println("You must supply a log group name (-g LOG-GROUP) and log stream name (-s LOG-STREAM)")
-		return Response{Message: "Job failed"}, nil
-	}
-
-	sess := session.Must(session.NewSessionWithOptions(session.Options{
-		SharedConfigState: session.SharedConfigEnable,
-	}))
-
-	resp, err := GetLogEvents(sess, limit, logGroupName, logStreamName)
+	// Get compressed data
+	compressedData := event.AwsLogs.Data
+	data, err := base64.StdEncoding.DecodeString(compressedData)
 	if err != nil {
-		fmt.Println("Got error getting log events: ", err)
-		return Response{Message: "Job failed"}, err
+		return Response{Message: "Job Failed", Error: err.Error()}, nil
 	}
-
-	fmt.Println("Event messages for stream " + logStreamName + " in log group  " + logGroupName)
-
-	for _, event := range resp.Events {
-		fmt.Println("------Message-------")
-		fmt.Println(*event.Message)
+	zr, err := gzip.NewReader(bytes.NewBuffer(data))
+	if err != nil {
+		return Response{Message: "Job Failed", Error: err.Error()}, nil
 	}
+	defer zr.Close()
+
+	dec := json.NewDecoder(zr)
+	m := Message{}
+	err = dec.Decode(&m)
+	fmt.Println(m.LogEvents[0].Message)
 
 	return Response{
-		TraceId: event.TraceId,
 		Message: "Job completed",
 	}, nil
 }
