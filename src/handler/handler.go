@@ -2,11 +2,26 @@ package handler
 
 import (
 	"context"
+	"data-collector/config"
+	"data-collector/pkg/log"
 	"fmt"
 
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cloudwatchlogs"
 )
+
+type LambdaController struct {
+	config config.Config
+	logger *log.Logger
+}
+
+func InitLambdaController(config config.Config, logger *log.Logger) *LambdaController {
+	lc := &LambdaController{
+		config: config,
+		logger: logger,
+	}
+	return lc
+}
 
 type Event struct {
 	TraceId       string `json:"traceId"`
@@ -19,8 +34,8 @@ type Response struct {
 	Message string `json:"message"`
 }
 
-func LambdaHandler(ctx context.Context, event Event) (Response, error) {
-	fmt.Println("-----Lambda execution started-----")
+func (lc *LambdaController) LambdaHandler(ctx context.Context, event Event) (Response, error) {
+	lc.logger.InfoMsg("-----Lambda execution started-----")
 
 	var limit int64 = 100
 

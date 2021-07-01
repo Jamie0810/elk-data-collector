@@ -1,0 +1,5 @@
+log:
+  level: INFO
+
+database:
+  table_name: ecdr-dev-log-data
